@@ -1,9 +1,9 @@
-import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv
-import pytesseract
+from util import argmin, argmax
+import digit_recognizer
 
 
 def plot(image, name=None):
@@ -13,42 +13,9 @@ def plot(image, name=None):
     plt.show()
 
 
-def argmax(elements: list) -> int:
-    # return the index of the highest value in the sequence
-    return elements.index(max(elements))
-
-
-def argmin(elements: list) -> int:
-    # return the index of the highest value in the sequence
-    return elements.index(min(elements))
-
-
-def extract_digit(image):
-    #plot(image)
-
-    # threshold
-    threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 2)
-
-    # loop through th middle of the image, looking for greatest area
-    y, x = threshold.shape
-    max_area = 0
-    seed = (-1, -1)
-
-    # Look for digit in the center of the image
-    for yi in range(y // 3, y * 2 // 3):
-        for xi in range(x // 3, x * 2 // 3):
-            if threshold.item(yi, xi) == 255:
-                area = cv.floodFill(threshold, None, (xi, yi), 255)
-                if max_area < area[0]:
-                    max_area = area[0]
-                    seed = (xi, yi)
-    print(max_area)
-    # if the artifact is less than 5% of the image - assume there is not digit
-    if max_area < (x * y) / 20:
-        return 0
-
-    # TODO: else - extract the digit
-    return 1
+def bounding_box(contour):
+    x, y = list(map(lambda p: p[0][0], contour)), list(map(lambda p: p[0][1], contour))
+    return [[min(x), min(y)], [max(x), max(y)]]
 
 
 def biggest_bounding_box(threshold):
@@ -56,7 +23,7 @@ def biggest_bounding_box(threshold):
     return contours[argmax(list(map(cv.contourArea, contours)))]
 
 
-def contour_to_rect(contour):
+def contour_to_rect(contour) -> np.array:
     x = list(map(lambda point: point[0][0], contour))
     y = list(map(lambda point: point[0][1], contour))
     x_plus_y = list(map(lambda a, b: a + b, x, y))
@@ -68,7 +35,7 @@ def contour_to_rect(contour):
     return np.float32([topleft, topright, bottomright, bottomleft])
 
 
-def crop(image, src_rect, dst_width, dst_height):
+def crop_and_warp(image, src_rect, dst_width, dst_height):
     dst_rect = np.float32([[0, 0], [dst_width, 0], [dst_width, dst_height], [0, dst_height]])
     # get contour
     m = cv.getPerspectiveTransform(src_rect, dst_rect)
@@ -83,34 +50,43 @@ def subimages(image, rows, cols):
             yield image[y * cell_y:(y + 1) * cell_y, x * cell_x:(x + 1) * cell_x]
 
 
-def extract_sudoku(path):
+def extract_digit(image):
+    threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
+    y, x = image.shape
+    max_area = 0
+    max_rect = None
+    # Look for digit in the center of the image
+    for yi in range(y // 3, y * 2 // 3):
+        for xi in range(x // 3, x * 2 // 3):
+            if threshold.item(yi, xi) == 255:
+                area, _, _, rect = cv.floodFill(threshold, None, (xi, yi), 255)
+                if max_area < area:
+                    max_area = area
+                    max_rect = rect
+    # if the biggest is less than 5% of the image - assume it's empty
+    if max_area < (x * y) / 20:
+        return 0
+
+    # else - extract the digit
+    x, y, w, h = max_rect
+    # plot(threshold[y:y + h, x:x + w])
+    return digit_recognizer.get_digit(threshold[y:y + h, x:x + w])
+
+
+def extract_sudoku(path) -> list:
     # read image as grayscale
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
     threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
     # plot(threshold)
     contour = biggest_bounding_box(threshold)
-    # cv.drawContours(image, [contour], 0, 255, 3)
-    transformed = crop(image, contour_to_rect(contour), 28 * 9, 28 * 9)
-    plot(transformed)
+    transformed = crop_and_warp(image, contour_to_rect(contour), 28 * 9, 28 * 9)
     return list(map(extract_digit, subimages(transformed, 9, 9)))
-
-
-def save_as_txt(sudoku, path):
-    assert len(sudoku) == 81
-    with open(path, 'w') as out:
-        for index, number in enumerate(sudoku):
-            out.write(str(number) if number != 0 else '_')
-            if index % 9 == 8:
-                out.write('\n')
-            elif index % 3 == 2:
-                out.write(' ')
 
 
 def main(args):
     path = 'sudoku.jpg' if len(args) == 0 else args[0]
     result = extract_sudoku(path)
     print(result)
-    save_as_txt(result, 'sudoku_from_image.txt')
 
 
 if __name__ == '__main__':

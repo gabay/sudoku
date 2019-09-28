@@ -2,6 +2,8 @@ import os
 import sys
 import re
 import copy
+import mycv
+import digit_recognizer
 
 
 class Sudoku:
@@ -14,12 +16,16 @@ class Sudoku:
         self.cells = cells
 
     @classmethod
-    def fromfile(cls, path):
+    def fromtxt(cls, path):
         with open(path) as inp:
             # allow digits and underscores
             data = inp.read().replace('_', '0')
             cells = list(map(int, re.findall(r'\d', data)))
             return Sudoku(cells)
+
+    @classmethod
+    def fromimage(cls, path):
+        return Sudoku(mycv.extract_sudoku(path))
 
     def copy(self):
         return Sudoku(self.cells)
@@ -109,10 +115,18 @@ def solve(sudoku, options=None):
 
 
 def main(args):
-    s = Sudoku.fromfile('sudoku.txt' if len(args) == 0 else args[0])
-    print(s)
-    print(get_options(s))
-    print(solve(s))
+    if 0:
+        # from txt file
+        s = Sudoku.fromtxt('sudoku.txt' if len(args) == 0 else args[0])
+        print(s)
+        print(get_options(s))
+        print(solve(s))
+    if 1:
+        # from image
+        s = Sudoku.fromimage('sudoku2.jpg')
+        print(s)
+        print(get_options(s))
+        print(solve(s))
 
 
 if __name__ == '__main__':
