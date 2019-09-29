@@ -63,14 +63,16 @@ def extract_digit(image):
                 if max_area < area:
                     max_area = area
                     max_rect = rect
-    # if the biggest is less than 5% of the image - assume it's empty
-    if max_area < (x * y) / 20:
+    # if the biggest is less than 4% of the image - assume it's empty
+    if max_area < (x * y) / 25:
         return 0
 
     # else - extract the digit
     x, y, w, h = max_rect
+    digit = digit_recognizer.get_digit(threshold[y:y + h, x:x + w])
+    # print(digit)
     # plot(threshold[y:y + h, x:x + w])
-    return digit_recognizer.get_digit(threshold[y:y + h, x:x + w])
+    return digit
 
 
 def extract_sudoku(path) -> list:

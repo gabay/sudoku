@@ -40,12 +40,12 @@ class DigitRecognizer:
             else:
                 # train and save model
                 r = cv.ml.SVM_create()
-                r.setKernel(cv.ml.SVM_POLY)
+                r.setKernel(cv.ml.SVM_LINEAR)
                 r.setType(cv.ml.SVM_C_SVC)
                 train, labels = cls.load_train_data()
                 r.train(train, cv.ml.ROW_SAMPLE, labels)
-                # TODO: save model when it gets good enough
-                # r.save(cls.MODEL_FILE)
+                # save model
+                r.save(cls.MODEL_FILE)
                 cls.MODEL = r
         return cls.MODEL
 

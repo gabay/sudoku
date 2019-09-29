@@ -115,18 +115,23 @@ def solve(sudoku, options=None):
 
 
 def main(args):
-    if 0:
-        # from txt file
-        s = Sudoku.fromtxt('sudoku.txt' if len(args) == 0 else args[0])
-        print(s)
-        print(get_options(s))
-        print(solve(s))
-    if 1:
-        # from image
-        s = Sudoku.fromimage('sudoku2.jpg')
-        print(s)
-        print(get_options(s))
-        print(solve(s))
+    # from txt file
+    s = Sudoku.fromtxt('sudoku.txt' if len(args) == 0 else args[0])
+    print(' ========')
+    print(' From TXT')
+    print(' ========')
+    print(s)
+    print(get_options(s))
+    print(solve(s))
+
+    # from image
+    print(' ========')
+    print(' From JPG')
+    print(' ========')
+    s = Sudoku.fromimage('sudoku.jpg')
+    print(s)
+    print(get_options(s))
+    print(solve(s))
 
 
 if __name__ == '__main__':
