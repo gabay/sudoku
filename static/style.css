@@ -1,0 +1,21 @@
+input[type='text'] {
+    width: 1rem;
+    border: 0;
+}
+
+table {
+    margin: 2rem;
+    border: black 2px solid;
+}
+
+table td {
+    border: black 1px solid;
+}
+
+table td:nth-child(3), table td:nth-child(6) {
+    border-right: 2px black solid;
+}
+
+table tr:nth-child(3), table tr:nth-child(6) {
+    border-bottom: 2px black solid;
+}
