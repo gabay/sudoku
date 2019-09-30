@@ -3,7 +3,7 @@ import sys
 import cv2 as cv
 import numpy as np
 
-import mycv
+from . import mycv
 
 
 def get_digit(digit_image) -> int:

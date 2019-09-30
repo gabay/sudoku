@@ -1,16 +1,16 @@
 from typing import Optional
 import z3
-import sudoku
+from . import *
 
 
 def solve(s: sudoku.Sudoku) -> Optional[sudoku.Sudoku]:
     constraints = _get_constraints(s)
     solver = z3.Solver()
-    solver.add(constraints)
+    solver.add(*constraints)
     if solver.check() == z3.sat:
         model = solver.model()
         # assume cell variables are entered in order...
-        cells = [model.eval(var) for var in model.decls()]
+        cells = [model[var].as_long() for var in model.decls()]
         return sudoku.Sudoku(cells)
     else:
         return None
@@ -28,20 +28,27 @@ def _get_constraints(s: sudoku.Sudoku = None):
         # deny equal cells per row
         for j in sudoku.row(i):
             if i < j:
-                row.append(cells[j] != cells[i])
+                row.append(cells[i] != cells[j])
         # deny equal cells per column
         for j in sudoku.col(i):
             if i < j:
-                col.append(cells[j] != cells[i])
+                col.append(cells[i] != cells[j])
         # deny equal cells per box
         for j in sudoku.box(i):
             if i < j:
-                box.append(cells[j] != cells[i])
+                box.append(cells[i] != cells[j])
 
-    specific_constraints = []
+    assignements = []
     if s is not None:
         for cell, value in zip(cells, s.cells):
             if 1 <= value <= 9:
-                specific_constraints.append(cell == value)
+                assignements.append(cell == value)
 
-    return val1 + val2 + row, col, box + specific_constraints
+    constraints = val1 + val2 + row + col + box + assignements
+    return constraints
+
+
+if __name__ == '__main__':
+    s = solve(sudoku.Sudoku())
+    print('Solved empty sudoku:')
+    print(s)

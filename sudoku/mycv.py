@@ -2,8 +2,8 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv
-from util import argmin, argmax
-import digit_recognizer
+from .util import argmin, argmax
+from . import digit_recognizer
 
 
 def plot(image, name=None):
