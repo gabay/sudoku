@@ -3,7 +3,24 @@ import sys
 import re
 import copy
 import mycv
-import digit_recognizer
+
+
+def row(index):
+    yield from range(index - (index % 9), index - (index % 9) + 9)
+
+
+def col(index):
+    yield from range(index % 9, 81, 9)
+
+
+def box(index):
+    box_x = (index // 3) % 3
+    column = index % 9
+    row = index - column
+    box_start = index - (index % 27) + column
+    yield from range(box_start, box_start + 3)
+    yield from range(box_start + 9, box_start + 12)
+    yield from range(box_start + 18, box_start + 21)
 
 
 class Sudoku:
@@ -68,16 +85,12 @@ class Sudoku:
 
 def trim_options(options, index, value):
     # remove value from row
-    row_start = index - (index % 9)
-    [cell_options.remove(value) for cell_options in options[row_start:row_start + 9] if value in cell_options]
+    [options[i].remove(value) for i in row(index) if value in options[i]]
     # remove value from col
-    col_start = index % 9
-    [cell_options.remove(value) for cell_options in options[col_start::9] if value in cell_options]
+    [options[i].remove(value) for i in col(index) if value in options[i]]
     # remove value from box
-    box_start = row_start - (row_start % 27) + col_start - (col_start % 3)
-    [cell_options.remove(value) for cell_options in options[box_start:box_start + 3] if value in cell_options]
-    [cell_options.remove(value) for cell_options in options[box_start + 9:box_start + 12] if value in cell_options]
-    [cell_options.remove(value) for cell_options in options[box_start + 18:box_start + 21] if value in cell_options]
+    [options[i].remove(value) for i in box(index) if value in options[i]]
+    # add value to current cell
     options[index] = {value}
 
 
@@ -89,11 +102,15 @@ def get_options(sudoku):
     return options
 
 
+def is_solvable(options):
+    return all([len(option) > 0 for option in options])
+
+
 def get_score(options):
     return 9 - len(options)
 
 
-def solve(sudoku, options=None):
+def solve(sudoku, options=None) -> Sudoku:
     if options is None:
         options = get_options(sudoku)
 
@@ -108,8 +125,8 @@ def solve(sudoku, options=None):
             sudoku[cell] = option
             new_options = copy.deepcopy(options)
             trim_options(new_options, cell, option)
-            # continue only if all cells have at least 1 option
-            if all(map(lambda x: len(x) > 0, new_options)):
+            # continue only if soduko is still solvable
+            if is_solvable(new_options):
                 solve(sudoku, new_options)
     return sudoku
 
