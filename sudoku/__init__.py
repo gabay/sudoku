@@ -1,2 +1,3 @@
 from .sudoku import *
-from . import sat
+from .backtrack import solve
+from .sat import solve as solve_sat

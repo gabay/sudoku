@@ -1,9 +1,9 @@
 from typing import Optional
 import z3
-from . import *
+from .sudoku import Sudoku, row, col, box
 
 
-def solve(s: sudoku.Sudoku) -> Optional[sudoku.Sudoku]:
+def solve(s: Sudoku) -> Optional[Sudoku]:
     constraints = _get_constraints(s)
     solver = z3.Solver()
     solver.add(*constraints)
@@ -11,44 +11,44 @@ def solve(s: sudoku.Sudoku) -> Optional[sudoku.Sudoku]:
         model = solver.model()
         # assume cell variables are entered in order...
         cells = [model[var].as_long() for var in model.decls()]
-        return sudoku.Sudoku(cells)
+        return Sudoku(cells)
     else:
         return None
 
 
-def _get_constraints(s: sudoku.Sudoku = None):
+def _get_constraints(s: Sudoku = None):
     cells = [z3.Int(f'cell{i:02}') for i in range(81)]
 
     # bound cell values
-    val1 = [cell >= 1 for cell in cells]
-    val2 = [cell <= 9 for cell in cells]
-    row, col, box = [], [], []
+    v1 = [cell >= 1 for cell in cells]
+    v2 = [cell <= 9 for cell in cells]
+    r, c, b = [], [], []
 
     for i in range(81):
         # deny equal cells per row
-        for j in sudoku.row(i):
+        for j in row(i):
             if i < j:
-                row.append(cells[i] != cells[j])
+                r.append(cells[i] != cells[j])
         # deny equal cells per column
-        for j in sudoku.col(i):
+        for j in col(i):
             if i < j:
-                col.append(cells[i] != cells[j])
+                c.append(cells[i] != cells[j])
         # deny equal cells per box
-        for j in sudoku.box(i):
+        for j in box(i):
             if i < j:
-                box.append(cells[i] != cells[j])
+                b.append(cells[i] != cells[j])
 
-    assignements = []
+    assignments = []
     if s is not None:
         for cell, value in zip(cells, s.cells):
             if 1 <= value <= 9:
-                assignements.append(cell == value)
+                assignments.append(cell == value)
 
-    constraints = val1 + val2 + row + col + box + assignements
+    constraints = v1 + v2 + r + c + b + assignments
     return constraints
 
 
 if __name__ == '__main__':
-    s = solve(sudoku.Sudoku())
+    s = solve(Sudoku())
     print('Solved empty sudoku:')
     print(s)
