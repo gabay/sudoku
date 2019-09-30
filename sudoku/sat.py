@@ -4,14 +4,12 @@ from .sudoku import Sudoku, row, col, box
 
 
 def solve(s: Sudoku) -> Optional[Sudoku]:
-    constraints = _get_constraints(s)
+    cells, constraints = _get_constraints(s)
     solver = z3.Solver()
     solver.add(*constraints)
     if solver.check() == z3.sat:
         model = solver.model()
-        # assume cell variables are entered in order...
-        cells = [model[var].as_long() for var in model.decls()]
-        return Sudoku(cells)
+        return Sudoku([model[cell].as_long() for cell in cells])
     else:
         return None
 
@@ -45,7 +43,7 @@ def _get_constraints(s: Sudoku = None):
                 assignments.append(cell == value)
 
     constraints = v1 + v2 + r + c + b + assignments
-    return constraints
+    return cells, constraints
 
 
 if __name__ == '__main__':
