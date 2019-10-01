@@ -30,6 +30,8 @@ def index():
             else:
                 message = 'Solved!'
                 table = s.cells
+        elif 'clear' in request.form:
+            message = 'Cleared'
     return render_template('index.html', table=table, message=message)
 
 
