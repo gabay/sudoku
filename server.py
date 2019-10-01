@@ -11,8 +11,6 @@ def index():
     table = None
     message = ''
     if request.method == 'POST':
-        print(request.form)
-        print(request.files)
         if 'load' in request.form:
             s = image_to_sudoku(request.files.get('image'))
             if s is None:
