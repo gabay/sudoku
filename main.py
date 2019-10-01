@@ -33,7 +33,7 @@ def main(args):
         s[8] = 9
         return sudoku.solve_sat(s)
 
-    print(timeit(f2, 'SAT solving'))
+    print(timeit(f2, 'SAT solving (with 9 assignments)'))
 
 
 if __name__ == '__main__':
