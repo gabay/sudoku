@@ -6,8 +6,8 @@
     </head>
     <body>
         <h1>Sudoku solver</h1>
-        <form method="post">
-            Image:<input name="image" type="file"/><input type="submit" value="Load"/>
+        <form enctype="multipart/form-data" method="post">
+            <input name="image" type="file"/><input name="load" type="submit" value="Load image"/>
         </form>
         <form method="post">
             <table><tbody>
@@ -20,7 +20,9 @@
                 {% endfor %}
             </tbody></table>
             <input type="reset" value="Reset"/>
-            <input type="submit" value="Solve"/>
+            <input name="backtrack" type="submit" value="Solve (backtrack)"/>
+            <input name="sat" type="submit" value="Solve (SAT)"/>
         </form>
+        <p>{{message}}</p>
     </body>
 </html>
