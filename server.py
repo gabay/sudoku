@@ -19,7 +19,7 @@ def index():
                 message = 'Loaded!'
                 table = s.cells
         elif 'backtrack' in request.form or 'sat' in request.form:
-            cells = [int(request.form[f'cell{i}'] or 0) for i in range(81)]
+            cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
             solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
             s = solver(sudoku.Sudoku(cells))
             if s is None:

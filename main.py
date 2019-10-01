@@ -9,7 +9,7 @@ def timeit(f, title=None):
     end = time.time()
     if title:
         print(title)
-    print(f'Time taken: {end - start:.2f}')
+    print('Time taken: %.02f' % (end - start))
     return result
 
 

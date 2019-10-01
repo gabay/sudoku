@@ -15,7 +15,7 @@ def solve(s: Sudoku) -> Optional[Sudoku]:
 
 
 def _get_constraints(s: Sudoku = None):
-    cells = [z3.Int(f'cell{i:02}') for i in range(81)]
+    cells = [z3.Int('cell%02d' % i) for i in range(81)]
 
     # bound cell values
     v1 = [cell >= 1 for cell in cells]
