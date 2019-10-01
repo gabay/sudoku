@@ -5,7 +5,7 @@ from .sudoku import Sudoku, row, col, box
 from .util import argmin
 
 
-def trim_options(options, index, value):
+def trim_options(options, index, value):# -> None:
     # remove value from row
     [options[i].remove(value) for i in row(index) if value in options[i]]
     # remove value from col
@@ -16,7 +16,7 @@ def trim_options(options, index, value):
     options[index] = {value}
 
 
-def get_options(sudoku) -> list:
+def get_options(sudoku):# -> list:
     options = [set(range(1, 10)) for _ in range(81)]
     for index, value in enumerate(sudoku.cells):
         if value != 0:
@@ -24,11 +24,11 @@ def get_options(sudoku) -> list:
     return options
 
 
-def is_solvable(options) -> bool:
+def is_solvable(options):# -> bool:
     return all([len(option) > 0 for option in options])
 
 
-def solve(s: Sudoku) -> Optional[Sudoku]:
+def solve(s: Sudoku):# -> Optional[Sudoku]:
     if s.is_full():
         return s
 
@@ -39,7 +39,7 @@ def solve(s: Sudoku) -> Optional[Sudoku]:
         return None
 
 
-def _solve(s: Sudoku, options: list) -> bool:
+def _solve(s: Sudoku, options: list):# -> bool:
     if s.is_full():
         return True
     if not is_solvable(options):

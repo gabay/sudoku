@@ -1,5 +1,4 @@
 import sys
-from typing import Optional
 
 from flask import Flask, request, render_template
 import sudoku
@@ -33,7 +32,7 @@ def index():
     return render_template('index.html', table=table, message=message)
 
 
-def image_to_sudoku(image) -> Optional[sudoku.Sudoku]:
+def image_to_sudoku(image):# -> Optional[sudoku.Sudoku]:
     if image:
         image.save('_sudoku.jpg')
         return sudoku.Sudoku.fromimage('_sudoku.jpg')

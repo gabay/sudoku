@@ -6,7 +6,7 @@ import numpy as np
 from . import mycv
 
 
-def get_digit(digit_image) -> int:
+def get_digit(digit_image):# -> int:
     return DigitRecognizer.get_digit(digit_image)
 
 
@@ -20,7 +20,7 @@ class DigitRecognizer:
         raise NotImplementedError('This class is used as a namespace')
 
     @classmethod
-    def get_digit(cls, image) -> int:
+    def get_digit(cls, image):# -> int:
         features = np.array([cls.resize(image)])
         retval, result = cls.get_model().predict(features)
         # print(int(result[0][0]))

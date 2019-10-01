@@ -1,9 +1,8 @@
-from typing import Optional
 import z3
 from .sudoku import Sudoku, row, col, box
 
 
-def solve(s: Sudoku) -> Optional[Sudoku]:
+def solve(s: Sudoku):# -> Optional[Sudoku]:
     cells, constraints = _get_constraints(s)
     solver = z3.Solver()
     solver.add(*constraints)

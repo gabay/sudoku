@@ -23,7 +23,7 @@ def biggest_bounding_box(threshold):
     return contours[argmax(list(map(cv.contourArea, contours)))]
 
 
-def contour_to_rect(contour) -> np.array:
+def contour_to_rect(contour):# -> np.array:
     x = list(map(lambda point: point[0][0], contour))
     y = list(map(lambda point: point[0][1], contour))
     x_plus_y = list(map(lambda a, b: a + b, x, y))
@@ -75,7 +75,7 @@ def extract_digit(image):
     return digit
 
 
-def extract_sudoku(path) -> list:
+def extract_sudoku(path):# -> list:
     # read image as grayscale
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
     threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
