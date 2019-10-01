@@ -1,16 +1,16 @@
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv
 from .util import argmin, argmax
 from . import digit_recognizer
+# import matplotlib.pyplot as plt
 
 
-def plot(image, name=None):
-    plt.imshow(image, cmap='gray')
-    if name:
-        plt.title(name)
-    plt.show()
+# def plot(image, name=None):
+#     plt.imshow(image, cmap='gray')
+#     if name:
+#         plt.title(name)
+#     plt.show()
 
 
 def bounding_box(contour):
