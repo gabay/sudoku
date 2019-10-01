@@ -42,7 +42,7 @@ def image_to_sudoku(image) -> Optional[sudoku.Sudoku]:
 
 
 def main(args):
-    host, port = '', 8000
+    host, port = '0.0.0.0', 8000
     if len(args) == 1:
         port = int(args[0])
     app.run(host, port)
