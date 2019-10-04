@@ -13,7 +13,7 @@ def timeit(f, title=None):
     return result
 
 
-def main(args):
+def test_solving_time():
     def f1():
         s = sudoku.Sudoku()
         return sudoku.solve(s)
@@ -34,6 +34,18 @@ def main(args):
         return sudoku.solve_sat(s)
 
     print(timeit(f2, 'SAT solving (with 9 assignments)'))
+
+
+def recognize_image():
+    image = 's.jpg'
+    s = sudoku.Sudoku.fromimage(image)
+    print(s)
+
+
+def main(args):
+    # test_solving_time()
+
+    recognize_image()
 
 
 if __name__ == '__main__':

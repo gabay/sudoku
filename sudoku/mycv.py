@@ -6,11 +6,12 @@ from . import digit_recognizer
 # import matplotlib.pyplot as plt
 
 
-# def plot(image, name=None):
+# def plot(image):
 #     plt.imshow(image, cmap='gray')
-#     if name:
-#         plt.title(name)
 #     plt.show()
+
+def plot(image):
+    pass
 
 
 def bounding_box(contour):
@@ -78,10 +79,16 @@ def extract_digit(image):
 def extract_sudoku(path):# -> list:
     # read image as grayscale
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
+    # plot(image)
+    image = cv.resize(image, (800, 800))
+    # plot(image)
     threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
     # plot(threshold)
     contour = biggest_bounding_box(threshold)
+    # cv.drawContours(threshold, [contour], 0, 127, 7)
+    # plot(threshold)
     transformed = crop_and_warp(image, contour_to_rect(contour), 28 * 9, 28 * 9)
+    # plot(transformed)
     return list(map(extract_digit, subimages(transformed, 9, 9)))
 
 
