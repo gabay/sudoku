@@ -36,10 +36,10 @@ def image_to_sudoku(image):  # -> Optional[sudoku.Sudoku]:
 
 
 def main(args):
-    host, port = '0.0.0.0', 8000
-    if len(args) == 1:
-        port = int(args[0])
-    app.run(host, port)
+    ssl_context = tuple(args) if len(args) == 2 else None
+    host = '0.0.0.0'
+    port = 80 if ssl_context is None else 443
+    app.run(host, port, ssl_context=ssl_context)
 
 
 if __name__ == '__main__':
