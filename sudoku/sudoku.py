@@ -62,3 +62,12 @@ class Sudoku:
 
     def is_full(self):
         return 0 not in self.cells
+
+
+def serialize(sudoku):
+    return ''.join(map(str, sudoku.cells))
+
+
+def deserialize(digits):
+    padded_cells = list(map(int, digits)) + [0 for _ in range(81)]
+    return Sudoku(padded_cells[:81])

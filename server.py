@@ -1,38 +1,33 @@
 import sys
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import sudoku
+
 app = Flask('SudokuSolver')
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    table = None
-    message = ''
-    if request.method == 'POST':
+    if request.method == 'GET':
+        table = sudoku.deserialize(request.args.get('table', ''))
+        message = request.args.get('message', '')
+        return render_template('index.html', table=table, message=message)
+    elif request.method == 'POST':
         if 'load' in request.form:
             s = image_to_sudoku(request.files.get('image'))
-            if s is None:
-                message = 'Failed to load :('
-            else:
-                message = 'Loaded!'
-                table = s.cells
+            message = 'Loaded!' if s is not None else 'Failed to load :('
+            return redirect(f'/?table={sudoku.serialize(s)}&message={message}')
         elif 'backtrack' in request.form or 'sat' in request.form:
             cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
             solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
             s = solver(sudoku.Sudoku(cells))
-            if s is None:
-                message = 'Failed to solve :('
-                table = cells
-            else:
-                message = 'Solved!'
-                table = s.cells
+            message = 'Solved!' if s is not None else 'Failed to solve :('
+            return redirect(f'/?table={sudoku.serialize(s)}&message={message}')
         elif 'clear' in request.form:
-            message = 'Cleared'
-    return render_template('index.html', table=table, message=message)
+            return redirect('/?message=Cleared!')
 
 
-def image_to_sudoku(image):# -> Optional[sudoku.Sudoku]:
+def image_to_sudoku(image):  # -> Optional[sudoku.Sudoku]:
     if image:
         image.save('_sudoku.jpg')
         return sudoku.Sudoku.fromimage('_sudoku.jpg')
@@ -45,7 +40,6 @@ def main(args):
     if len(args) == 1:
         port = int(args[0])
     app.run(host, port)
-
 
 
 if __name__ == '__main__':
