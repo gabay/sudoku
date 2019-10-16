@@ -13,21 +13,21 @@ def index():
         message = request.args.get('message', '')
         return render_template('index.html', table=table, message=message)
     elif request.method == 'POST':
-        redirect_url = ''
+        redirect_url = '/'
         if 'load' in request.form:
             s = image_to_sudoku(request.files.get('image'))
-            if s is None:
-                redirect_url = '/?message=Failed to load :('
-            else:
+            if s:
                 redirect_url = f'/?table={sudoku.serialize(s)}&message=Loaded!'
+            else:
+                redirect_url = '/?message=Failed to load :('
         elif 'backtrack' in request.form or 'sat' in request.form:
             cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
             solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
             s = solver(sudoku.Sudoku(cells))
             if s:
-                redirect_url = '/?message=Failed to solve :('
-            else:
                 redirect_url = f'/?table={sudoku.serialize(s)}&message=Solved!'
+            else:
+                redirect_url = '/?message=Failed to solve :('
         elif 'clear' in request.form:
             redirect_url = '/?message=Cleared!'
         return redirect(redirect_url)
