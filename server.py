@@ -13,18 +13,24 @@ def index():
         message = request.args.get('message', '')
         return render_template('index.html', table=table, message=message)
     elif request.method == 'POST':
+        redirect_url = ''
         if 'load' in request.form:
             s = image_to_sudoku(request.files.get('image'))
-            message = 'Loaded!' if s is not None else 'Failed to load :('
-            return redirect(f'/?table={sudoku.serialize(s)}&message={message}')
+            if s is None:
+                redirect_url = '/?message=Failed to load :('
+            else:
+                redirect_url = f'/?table={sudoku.serialize(s)}&message=Loaded!'
         elif 'backtrack' in request.form or 'sat' in request.form:
             cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
             solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
             s = solver(sudoku.Sudoku(cells))
-            message = 'Solved!' if s is not None else 'Failed to solve :('
-            return redirect(f'/?table={sudoku.serialize(s)}&message={message}')
+            if s:
+                redirect_url = '/?message=Failed to solve :('
+            else:
+                redirect_url = f'/?table={sudoku.serialize(s)}&message=Solved!'
         elif 'clear' in request.form:
-            return redirect('/?message=Cleared!')
+            redirect_url = '/?message=Cleared!'
+        return redirect(redirect_url)
 
 
 def image_to_sudoku(image):  # -> Optional[sudoku.Sudoku]:
