@@ -1,42 +1,47 @@
+import os
 import sys
+import tempfile
 
-from flask import Flask, request, render_template, redirect
+from flask import Flask, redirect, render_template, request
+
 import sudoku
 
 app = Flask('SudokuSolver')
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'GET':
-        table = sudoku.deserialize(request.args.get('table', ''))
-        message = request.args.get('message', '')
-        return render_template('index.html', table=table, message=message)
-    elif request.method == 'POST':
-        redirect_url = '/'
-        if 'load' in request.form:
-            s = image_to_sudoku(request.files.get('image'))
-            if s:
-                redirect_url = f'/?table={sudoku.serialize(s)}&message=Loaded!'
-            else:
-                redirect_url = '/?message=Failed to load :('
-        elif 'backtrack' in request.form or 'sat' in request.form:
-            cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
-            solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
-            s = solver(sudoku.Sudoku(cells))
-            if s:
-                redirect_url = f'/?table={sudoku.serialize(s)}&message=Solved!'
-            else:
-                redirect_url = '/?message=Failed to solve :('
-        elif 'clear' in request.form:
-            redirect_url = '/?message=Cleared!'
-        return redirect(redirect_url)
+@app.route('/', methods=['GET'])
+def index_get():
+    table = sudoku.deserialize(request.args.get('table', ''))
+    message = request.args.get('message', '')
+    return render_template('index.html', table=table, message=message)
+
+@app.route('/', methods=['POST'])
+def index_post():
+    if 'load' in request.form:
+        s = image_to_sudoku(request.files.get('image'))
+        if s:
+            return redirect(f'/?table={sudoku.serialize(s)}&message=Loaded!')
+        else:
+            return redirect(f'/?message=Image loading failed :(')
+    elif 'backtrack' in request.form or 'sat' in request.form:
+        cells = [int(request.form['cell%d' % i] or 0) for i in range(81)]
+        solver = sudoku.solve if 'backtrack' in request.form else sudoku.solve_sat
+        s = solver(sudoku.Sudoku(cells))
+        if s:
+            return redirect(f'/?table={sudoku.serialize(s)}&message=Solved!')
+        else:
+            return redirect('/?message=Solving failed :(')
+    elif 'clear' in request.form:
+        return redirect('/?message=Cleared!')
 
 
 def image_to_sudoku(image):  # -> Optional[sudoku.Sudoku]:
     if image:
-        image.save('_sudoku.jpg')
-        return sudoku.Sudoku.fromimage('_sudoku.jpg')
+        temp_path = tempfile.mktemp('_sudoku.jpg')
+        image.save(temp_path)
+        s = sudoku.Sudoku.fromimage(temp_path)
+        os.unlink(temp_path)
+        return s
     else:
         return None
 

@@ -11,4 +11,3 @@ setup(name='sudoku',
       install_requires=[
           'z3-solver', 'opencv-python', 'flask'
       ])
-#dependency: z3, opencv, flask

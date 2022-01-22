@@ -1,8 +1,11 @@
 import sys
-import numpy as np
+
 import cv2 as cv
-from .util import argmin, argmax
+import numpy as np
+
 from . import digit_recognizer
+from .util import argmax, argmin
+
 # import matplotlib.pyplot as plt
 
 
