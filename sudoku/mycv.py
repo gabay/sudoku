@@ -13,6 +13,7 @@ from .util import argmax, argmin
 #     plt.imshow(image, cmap='gray')
 #     plt.show()
 
+
 def plot(image):
     pass
 
@@ -27,7 +28,7 @@ def biggest_bounding_box(threshold):
     return contours[argmax(list(map(cv.contourArea, contours)))]
 
 
-def contour_to_rect(contour):# -> np.array:
+def contour_to_rect(contour):  # -> np.array:
     x = list(map(lambda point: point[0][0], contour))
     y = list(map(lambda point: point[0][1], contour))
     x_plus_y = list(map(lambda a, b: a + b, x, y))
@@ -51,11 +52,13 @@ def subimages(image, rows, cols):
     cell_y = image.shape[0] // 9
     for y in range(rows):
         for x in range(cols):
-            yield image[y * cell_y:(y + 1) * cell_y, x * cell_x:(x + 1) * cell_x]
+            yield image[y * cell_y : (y + 1) * cell_y, x * cell_x : (x + 1) * cell_x]
 
 
 def extract_digit(image):
-    threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
+    threshold = cv.adaptiveThreshold(
+        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10
+    )
     y, x = image.shape
     max_area = 0
     max_rect = None
@@ -73,19 +76,21 @@ def extract_digit(image):
 
     # else - extract the digit
     x, y, w, h = max_rect
-    digit = digit_recognizer.get_digit(threshold[y:y + h, x:x + w])
+    digit = digit_recognizer.get_digit(threshold[y : y + h, x : x + w])
     # print(digit)
     # plot(threshold[y:y + h, x:x + w])
     return digit
 
 
-def extract_sudoku(path):# -> list:
+def extract_sudoku(path):  # -> list:
     # read image as grayscale
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
     # plot(image)
     image = cv.resize(image, (800, 800))
     # plot(image)
-    threshold = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10)
+    threshold = cv.adaptiveThreshold(
+        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10
+    )
     # plot(threshold)
     contour = biggest_bounding_box(threshold)
     # cv.drawContours(threshold, [contour], 0, 127, 7)
@@ -96,10 +101,10 @@ def extract_sudoku(path):# -> list:
 
 
 def main(args):
-    path = 'sudoku.jpg' if len(args) == 0 else args[0]
+    path = "sudoku.jpg" if len(args) == 0 else args[0]
     result = extract_sudoku(path)
     print(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

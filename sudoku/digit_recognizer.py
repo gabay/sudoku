@@ -6,21 +6,21 @@ import numpy as np
 from . import mycv
 
 
-def get_digit(digit_image):# -> int:
+def get_digit(digit_image):  # -> int:
     return DigitRecognizer.get_digit(digit_image)
 
 
 class DigitRecognizer:
-    TRAIN_FILE = 'digits.png'
-    MODEL_FILE = 'digit_recognizer.dat'
+    TRAIN_FILE = "digits.png"
+    MODEL_FILE = "digit_recognizer.dat"
     MODEL = None
     SIZE = (20, 15)
 
     def __init__(self):
-        raise NotImplementedError('This class is used as a namespace')
+        raise NotImplementedError("This class is used as a namespace")
 
     @classmethod
-    def get_digit(cls, image):# -> int:
+    def get_digit(cls, image):  # -> int:
         features = np.array([cls.resize(image)])
         retval, result = cls.get_model().predict(features)
         # print(int(result[0][0]))
@@ -63,7 +63,9 @@ class DigitRecognizer:
         # plt.show()
 
         # resize train data (and omit 0)
-        train = np.array([cls.resize(threshold[b[0][1]:b[1][1], b[0][0]:b[1][0]]) for b in bounding_boxes])[1:]
+        train = np.array(
+            [cls.resize(threshold[b[0][1] : b[1][1], b[0][0] : b[1][0]]) for b in bounding_boxes]
+        )[1:]
         labels = np.arange(1, 10)
 
         return train, labels
@@ -75,5 +77,5 @@ def main(args):
     print([i.shape for i in data[0]])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

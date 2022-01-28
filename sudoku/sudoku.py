@@ -34,8 +34,8 @@ class Sudoku:
     def fromtxt(cls, path):
         with open(path) as inp:
             # allow digits and underscores
-            data = inp.read().replace('_', '0')
-            cells = list(map(int, re.findall(r'\d', data)))
+            data = inp.read().replace("_", "0")
+            cells = list(map(int, re.findall(r"\d", data)))
             return Sudoku(cells)
 
     @classmethod
@@ -43,7 +43,7 @@ class Sudoku:
         return Sudoku(mycv.extract_sudoku(path))
 
     def __str__(self):
-        return '\n'.join(' '.join(map(str, self.cells[9 * i:9 * (i + 1)])) for i in range(9))
+        return "\n".join(" ".join(map(str, self.cells[9 * i : 9 * (i + 1)])) for i in range(9))
 
     def __getitem__(self, index):
         return self.cells[self._index(index)]
@@ -65,7 +65,7 @@ class Sudoku:
 
 
 def serialize(sudoku):
-    return ''.join(map(str, sudoku.cells))
+    return "".join(map(str, sudoku.cells))
 
 
 def deserialize(digits):

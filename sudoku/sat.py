@@ -2,7 +2,7 @@ import z3
 from .sudoku import Sudoku, row, col, box
 
 
-def solve(s: Sudoku):# -> Optional[Sudoku]:
+def solve(s: Sudoku):  # -> Optional[Sudoku]:
     cells, constraints = _get_constraints(s)
     solver = z3.Solver()
     solver.add(*constraints)
@@ -14,7 +14,7 @@ def solve(s: Sudoku):# -> Optional[Sudoku]:
 
 
 def _get_constraints(s: Sudoku = None):
-    cells = [z3.Int('cell%02d' % i) for i in range(81)]
+    cells = [z3.Int("cell%02d" % i) for i in range(81)]
 
     # bound cell values
     v1 = [cell >= 1 for cell in cells]
@@ -45,7 +45,7 @@ def _get_constraints(s: Sudoku = None):
     return cells, constraints
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     s = solve(Sudoku())
-    print('Solved empty sudoku:')
+    print("Solved empty sudoku:")
     print(s)
