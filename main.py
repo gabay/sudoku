@@ -1,5 +1,7 @@
+import os
 import sys
 import time
+
 import sudoku
 
 
@@ -29,17 +31,19 @@ def test_solving_time():
     print(timeit(f2, "SAT solving (with 9 assignments)"))
 
 
-def recognize_image():
-    image = "s.jpg"
-    s = sudoku.Sudoku.fromimage(image)
+def recognize_image(path):
+    s = sudoku.Sudoku.fromimage(path)
     print(s)
 
 
-def main(args):
+def main(path):
     # test_solving_time()
 
-    recognize_image()
+    recognize_image(path)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    if len(sys.argv) != 2:
+        print(f"Usage: {os.path.basename(sys.argv[0])} SUDOKU_IMAGE")
+    else:
+        main(sys.argv[1])

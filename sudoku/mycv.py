@@ -6,16 +6,10 @@ import numpy as np
 from . import digit_recognizer
 from .util import argmax, argmin
 
-# import matplotlib.pyplot as plt
-
-
-# def plot(image):
-#     plt.imshow(image, cmap='gray')
-#     plt.show()
-
 
 def plot(image):
-    pass
+    cv.imshow("image", image)
+    cv.waitKey(0)
 
 
 def bounding_box(contour):
@@ -57,7 +51,7 @@ def subimages(image, rows, cols):
 
 def extract_digit(image):
     threshold = cv.adaptiveThreshold(
-        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10
+        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 6
     )
     y, x = image.shape
     max_area = 0
@@ -77,8 +71,8 @@ def extract_digit(image):
     # else - extract the digit
     x, y, w, h = max_rect
     digit = digit_recognizer.get_digit(threshold[y : y + h, x : x + w])
-    # print(digit)
-    # plot(threshold[y:y + h, x:x + w])
+    print(digit)
+    # plot(threshold[y : y + h, x : x + w])
     return digit
 
 
@@ -89,7 +83,7 @@ def extract_sudoku(path):  # -> list:
     image = cv.resize(image, (800, 800))
     # plot(image)
     threshold = cv.adaptiveThreshold(
-        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 10
+        image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 6
     )
     # plot(threshold)
     contour = biggest_bounding_box(threshold)
