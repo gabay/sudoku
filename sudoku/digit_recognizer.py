@@ -1,5 +1,6 @@
 import os
 import sys
+
 import cv2 as cv
 import numpy as np
 
@@ -58,9 +59,8 @@ class DigitRecognizer:
         # sort by x position and label 0-9
         bounding_boxes.sort(key=lambda box: box[0][0])
 
-        # cv.drawContours(image, np.array(bounding_boxes), -1, 0)
-        # plt.imshow(image)
-        # plt.show()
+        # cv.drawContours(image, np.array(bounding_boxes), -1, 128)
+        # mycv.plot(image)
 
         # resize train data (and omit 0)
         train = np.array(

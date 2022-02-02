@@ -54,24 +54,25 @@ def extract_digit(image):
         image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 6
     )
     y, x = image.shape
-    max_area = 0
+    max_rect_area = 0
     max_rect = None
     # Look for digit in the center of the image
     for yi in range(y // 3, y * 2 // 3):
         for xi in range(x // 3, x * 2 // 3):
             if threshold.item(yi, xi) == 255:
-                area, _, _, rect = cv.floodFill(threshold, None, (xi, yi), 255)
-                if max_area < area:
-                    max_area = area
+                _, _, _, rect = cv.floodFill(threshold, None, (xi, yi), 255)
+                rect_area = rect[2] * rect[3]
+                if max_rect_area < rect_area:
+                    max_rect_area = rect_area
                     max_rect = rect
-    # if the biggest is less than 4% of the image - assume it's empty
-    if max_area < (x * y) / 25:
+    # if the biggest is less than 5% of the image - assume it's empty
+    if max_rect_area < (x * y) * 0.05:
         return 0
 
-    # else - extract the digit
+    # extract the digit
     x, y, w, h = max_rect
     digit = digit_recognizer.get_digit(threshold[y : y + h, x : x + w])
-    print(digit)
+    # print(digit)
     # plot(threshold[y : y + h, x : x + w])
     return digit
 
